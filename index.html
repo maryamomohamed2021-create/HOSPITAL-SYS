@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShifoCare - Hospital Management System</title>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-hospital-user"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h2>Shifo<span>Care</span></h2>
+                        <p class="tagline">Hospital Management System</p>
+                    </div>
+                </div>
+                <button class="mobile-close-btn" id="closeSidebarBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">GUUDMAR & HOGAANKA</div>
+                <ul class="nav-list">
+                    <li class="nav-item active" data-view="dashboard">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Dashboard-ka Guud</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-section-title">7-DA JADWAL EE MUHIIMKA AH (7 TABLES)</div>
+                <ul class="nav-list">
+                    <li class="nav-item" data-view="patients">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-user-injured"></i>
+                            <span>1. Bukaannada (Patients)</span>
+                            <span class="badge" id="badgePatients">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-view="doctors">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-user-doctor"></i>
+                            <span>2. Dhaqaatiirta (Doctors)</span>
+                            <span class="badge" id="badgeDoctors">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-view="appointments">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span>3. Ballamaha (Appointments)</span>
+                            <span class="badge warning" id="badgeAppointments">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-view="beds">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-bed-pulse"></i>
+                            <span>4. Sariiraha & Qolalka (Beds)</span>
+                            <span class="badge info" id="badgeBeds">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-view="pharmacy">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-pills"></i>
+                            <span>5. Farmashiyaha (Pharmacy)</span>
+                            <span class="badge danger" id="badgePharmacy">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-view="laboratory">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-flask-vial"></i>
+                            <span>6. Shaybaarka (Laboratory)</span>
+                            <span class="badge purple" id="badgeLab">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-view="billing">
+                        <a href="javascript:void(0)">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <span>7. Biilasha & Dhaqaalaha</span>
+                            <span class="badge success" id="badgeBilling">0</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-footer">
+                    <div class="system-status">
+                        <div class="status-indicator online"></div>
+                        <div class="status-details">
+                            <span class="status-title">Habka Shaqada</span>
+                            <span class="status-subtitle">Khadka Waa Toos (Active)</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-wrapper">
+            <!-- TOP NAVBAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle-btn" id="menuToggleBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="page-title-box">
+                        <h1 id="currentViewTitle">Dashboard-ka Guud ee Isbitaalka</h1>
+                        <p id="currentViewSubtitle">Warbixinta guud ee howlgalka, bukaannada, iyo adeegyada caafimaad</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="live-clock">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="liveClockText">--:--:--</span>
+                    </div>
+
+                    <div class="topbar-actions">
+                        <button class="action-btn" id="printReportBtn" title="Daabac Warbixinta / Print">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
+                        <button class="action-btn" id="themeToggleBtn" title="Bedel Muuqaalka / Dark Mode">
+                            <i class="fa-solid fa-moon"></i>
+                        </button>
+                    </div>
+
+                    <div class="user-profile">
+                        <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&auto=format&fit=crop&q=80" alt="Dr. Cabdi" class="avatar">
+                        <div class="user-info">
+                            <span class="user-name">Dr. Cabdiraxmaan Cali</span>
+                            <span class="user-role">Maamulaha Isbitaalka (Chief Admin)</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN BODY VIEWS -->
+            <main class="content-body">
+                
+                <!-- 0. DASHBOARD OVERVIEW VIEW -->
+                <section class="view-panel active" id="view-dashboard">
+                    <!-- Stat KPI Cards -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card teal">
+                            <div class="kpi-content">
+                                <span class="kpi-label">Wadarta Bukaannada</span>
+                                <h3 class="kpi-value" id="kpiTotalPatients">0</h3>
+                                <div class="kpi-meta positive">
+                                    <i class="fa-solid fa-arrow-trend-up"></i>
+                                    <span>+14% Usbuucan</span>
+                                </div>
+                            </div>
+                            <div class="kpi-icon">
+                                <i class="fa-solid fa-user-injured"></i>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card blue">
+                            <div class="kpi-content">
+                                <span class="kpi-label">Dhaqaatiirta Shaqada</span>
+                                <h3 class="kpi-value" id="kpiActiveDoctors">0</h3>
+                                <div class="kpi-meta">
+                                    <i class="fa-solid fa-stethoscope"></i>
+                                    <span>Dhammaan qaybaha</span>
+                                </div>
+                            </div>
+                            <div class="kpi-icon">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card amber">
+                            <div class="kpi-content">
+                                <span class="kpi-label">Ballamaha Maanta</span>
+                                <h3 class="kpi-value" id="kpiTodayAppointments">0</h3>
+                                <div class="kpi-meta">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    <span>Jadwalka maanta</span>
+                                </div>
+                            </div>
+                            <div class="kpi-icon">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card emerald">
+                            <div class="kpi-content">
+                                <span class="kpi-label">Sariiraha Bannaan</span>
+                                <h3 class="kpi-value" id="kpiAvailableBeds">0</h3>
+                                <div class="kpi-meta positive">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>Booqashada diyaar</span>
+                                </div>
+                            </div>
+                            <div class="kpi-icon">
+                                <i class="fa-solid fa-bed"></i>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card red">
+                            <div class="kpi-content">
+                                <span class="kpi-label">Daawooyinka Dhawaan Dhacaya</span>
+                                <h3 class="kpi-value" id="kpiLowStockDrugs">0</h3>
+                                <div class="kpi-meta negative">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    <span>U baahan soo iibin</span>
+                                </div>
+                            </div>
+                            <div class="kpi-icon">
+                                <i class="fa-solid fa-pills"></i>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card purple">
+                            <div class="kpi-content">
+                                <span class="kpi-label">Dakhliga Guud (Revenue)</span>
+                                <h3 class="kpi-value" id="kpiTotalRevenue">$0</h3>
+                                <div class="kpi-meta positive">
+                                    <i class="fa-solid fa-arrow-trend-up"></i>
+                                    <span>+22% Bishan</span>
+                                </div>
+                            </div>
+                            <div class="kpi-icon">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="dashboard-charts-grid">
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <h3>Imaatinka Bukaanka (Patient Inflow Trend)</h3>
+                                    <p>Iskucelceliska 7-dii maalmood ee la soo dhaafay</p>
+                                </div>
+                                <span class="badge info">7 Maalmood</span>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="patientFlowChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <h3>Qaybaha Sariiraha & Isticmaalka (Bed Occupancy)</h3>
+                                    <p>Heerka buuxnaanta qeybaha isbitaalka</p>
+                                </div>
+                                <span class="badge success">Wakhtiga Dhabta ah</span>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="bedOccupancyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Navigation & Highlights Grid -->
+                    <div class="quick-panels-grid">
+                        <!-- Recent Patients Activity -->
+                        <div class="quick-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-clock-rotate-left"></i> Bukaannada Cusub ee Soo Galay</h3>
+                                <button class="btn btn-sm btn-outline" onclick="switchView('patients')">Eeg Dhammaan</button>
+                            </div>
+                            <div class="mini-table-wrapper">
+                                <table class="mini-table" id="recentPatientsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Bukaanka</th>
+                                            <th>Qeybta</th>
+                                            <th>Dhakhtarka</th>
+                                            <th>Xaaladda</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Today's Doctors on Duty -->
+                        <div class="quick-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-stethoscope"></i> Dhaqaatiirta Maanta Joogta</h3>
+                                <button class="btn btn-sm btn-outline" onclick="switchView('doctors')">Eeg Dhaqaatiirta</button>
+                            </div>
+                            <div class="mini-table-wrapper">
+                                <table class="mini-table" id="dutyDoctorsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Dhakhtarka</th>
+                                            <th>Khabiirka (Specialty)</th>
+                                            <th>Qolka</th>
+                                            <th>Shift-ka</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 1. PATIENTS VIEW (TABLE 1) -->
+                <section class="view-panel" id="view-patients">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <div class="header-left">
+                                <div class="table-title">
+                                    <h2><i class="fa-solid fa-user-injured text-teal"></i> Diiwaanka Bukaannada (Patients Directory)</h2>
+                                    <p>Maamulka dhammaan xogta bukaanada jiifa, kuwa baxay, iyo kuwa bukaan socodka ah.</p>
+                                </div>
+                            </div>
+                            <div class="header-right">
+                                <button class="btn btn-primary" onclick="openCreateModal('patients')">
+                                    <i class="fa-solid fa-plus"></i> Diiwaangeli Bukaan Cusub
+                                </button>
+                                <button class="btn btn-outline" onclick="exportTableToCSV('patients')">
+                                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filters & Search Toolbar -->
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="searchPatients" placeholder="Raadi Magac, ID, ama Telefoon..." oninput="filterTable('patients')">
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fa-solid fa-filter"></i> Xaaladda:</label>
+                                <select id="filterStatusPatients" onchange="filterTable('patients')">
+                                    <option value="all">Dhammaan Xaaladaha</option>
+                                    <option value="Jiifa (Admitted)">Jiifa (Admitted)</option>
+                                    <option value="Bukaan Socod (Outpatient)">Bukaan Socod (Outpatient)</option>
+                                    <option value="Fasaxan (Discharged)">Fasaxan (Discharged)</option>
+                                    <option value="Degdeg (Emergency)">Degdeg (Emergency)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Data Table -->
+                        <div class="responsive-table-container">
+                            <table class="data-table" id="patientsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Magaca Bukaan-ka</th>
+                                        <th>Da'da / Jinsiga</th>
+                                        <th>Dhiigga</th>
+                                        <th>Telefoonka</th>
+                                        <th>Qeybta & Qolka</th>
+                                        <th>Dhakhtarka Qabtay</th>
+                                        <th>Taariikhda</th>
+                                        <th>Xaaladda</th>
+                                        <th class="actions-col">Ficilada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Injected Dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. DOCTORS VIEW (TABLE 2) -->
+                <section class="view-panel" id="view-doctors">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <div class="header-left">
+                                <div class="table-title">
+                                    <h2><i class="fa-solid fa-user-doctor text-blue"></i> Diiwaanka Dhaqaatiirta (Medical Doctors)</h2>
+                                    <p>Maareynta dhaqaatiirta ku takhasusay qeybaha kala duwan iyo jadwalladooda.</p>
+                                </div>
+                            </div>
+                            <div class="header-right">
+                                <button class="btn btn-primary" onclick="openCreateModal('doctors')">
+                                    <i class="fa-solid fa-plus"></i> Ku dar Dhakhtar Cusub
+                                </button>
+                                <button class="btn btn-outline" onclick="exportTableToCSV('doctors')">
+                                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="searchDoctors" placeholder="Raadi Dhakhtar, Takhasus, ama Qol..." oninput="filterTable('doctors')">
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fa-solid fa-filter"></i> Takhasuska:</label>
+                                <select id="filterSpecialtyDoctors" onchange="filterTable('doctors')">
+                                    <option value="all">Dhammaan Takhasusyada</option>
+                                    <option value="Qalliinka Guud (General Surgery)">Qalliinka Guud</option>
+                                    <option value="Wadnaha (Cardiology)">Wadnaha</option>
+                                    <option value="Carruurta (Pediatrics)">Carruurta</option>
+                                    <option value="Haweenka (Gynecology)">Haweenka</option>
+                                    <option value="Lafaha (Orthopedics)">Lafaha</option>
+                                    <option value="Indhaha (Ophthalmology)">Indhaha</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="responsive-table-container">
+                            <table class="data-table" id="doctorsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor ID</th>
+                                        <th>Magaca Dhakhtarka</th>
+                                        <th>Takhasuska (Specialty)</th>
+                                        <th>Telefoonka</th>
+                                        <th>Email</th>
+                                        <th>Qolka / Xafiiska</th>
+                                        <th>Shift-ka Shaqada</th>
+                                        <th>Bukaannada u Qoran</th>
+                                        <th>Xaaladda</th>
+                                        <th class="actions-col">Ficilada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. APPOINTMENTS VIEW (TABLE 3) -->
+                <section class="view-panel" id="view-appointments">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <div class="header-left">
+                                <div class="table-title">
+                                    <h2><i class="fa-solid fa-calendar-check text-amber"></i> Jadwalka Ballamaha (Appointments)</h2>
+                                    <p>Maareynta ballamaha bukaanka iyo dhaqaatiirta maalin walba.</p>
+                                </div>
+                            </div>
+                            <div class="header-right">
+                                <button class="btn btn-primary" onclick="openCreateModal('appointments')">
+                                    <i class="fa-solid fa-plus"></i> Samee Ballan Cusub
+                                </button>
+                                <button class="btn btn-outline" onclick="exportTableToCSV('appointments')">
+                                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="searchAppointments" placeholder="Raadi Bukaan, Dhakhtar, ama Ballan ID..." oninput="filterTable('appointments')">
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fa-solid fa-filter"></i> Xaaladda Ballanta:</label>
+                                <select id="filterStatusAppointments" onchange="filterTable('appointments')">
+                                    <option value="all">Dhammaan</option>
+                                    <option value="La Sugayo (Pending)">La Sugayo (Pending)</option>
+                                    <option value="La Xaqiijiyay (Confirmed)">La Xaqiijiyay (Confirmed)</option>
+                                    <option value="Dhameystiran (Completed)">Dhameystiran (Completed)</option>
+                                    <option value="La Baajiyay (Cancelled)">La Baajiyay (Cancelled)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="responsive-table-container">
+                            <table class="data-table" id="appointmentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Appt ID</th>
+                                        <th>Bukaanka</th>
+                                        <th>Dhakhtarka</th>
+                                        <th>Qeybta</th>
+                                        <th>Taariikhda & Saacadda</th>
+                                        <th>Nooca Booqashada</th>
+                                        <th>Qiimaha / Fee</th>
+                                        <th>Xaaladda Ballanta</th>
+                                        <th class="actions-col">Ficilada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. BEDS & WARDS VIEW (TABLE 4) -->
+                <section class="view-panel" id="view-beds">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <div class="header-left">
+                                <div class="table-title">
+                                    <h2><i class="fa-solid fa-bed-pulse text-emerald"></i> Sariiraha & Qolalka Isbitaalka (Beds & Wards)</h2>
+                                    <p>La socodka sariiraha bannaan, kuwa buuxa, iyo qolalka daryeelka gaarka ah.</p>
+                                </div>
+                            </div>
+                            <div class="header-right">
+                                <button class="btn btn-primary" onclick="openCreateModal('beds')">
+                                    <i class="fa-solid fa-plus"></i> Ku dar Sariir Cusub
+                                </button>
+                                <button class="btn btn-outline" onclick="exportTableToCSV('beds')">
+                                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="searchBeds" placeholder="Raadi Sariir, Ward, ama Qol..." oninput="filterTable('beds')">
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fa-solid fa-filter"></i> Qeybta (Ward):</label>
+                                <select id="filterWardBeds" onchange="filterTable('beds')">
+                                    <option value="all">Dhammaan Qeybaha</option>
+                                    <option value="ICU (Daryeelka Degdegga)">ICU (Daryeelka Degdegga)</option>
+                                    <option value="Qeybta Guud (General Ward)">Qeybta Guud</option>
+                                    <option value="Umusha & Dhallaanka (Maternity)">Umusha & Dhallaanka</option>
+                                    <option value="Qalliinka (Surgical Ward)">Qalliinka</option>
+                                    <option value="Kala-Go'idda (Isolation/VIP)">VIP / Isolation</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="responsive-table-container">
+                            <table class="data-table" id="bedsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Sariirta No</th>
+                                        <th>Qolka / Qeybta (Ward)</th>
+                                        <th>Dabaqa (Floor)</th>
+                                        <th>Nooca Sariirta</th>
+                                        <th>Bukaanka Jiifa</th>
+                                        <th>Kalkalisada Mas'uulka</th>
+                                        <th>Qiimaha Maalintii</th>
+                                        <th>Xaaladda Sariirta</th>
+                                        <th class="actions-col">Ficilada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. PHARMACY VIEW (TABLE 5) -->
+                <section class="view-panel" id="view-pharmacy">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <div class="header-left">
+                                <div class="table-title">
+                                    <h2><i class="fa-solid fa-pills text-red"></i> Farmashiyaha & Kaydka Daawooyinka (Pharmacy)</h2>
+                                    <p>Maareynta daawooyinka yaalla, tirada hadhay, taariikhda dhicitaanka, iyo qiimaha.</p>
+                                </div>
+                            </div>
+                            <div class="header-right">
+                                <button class="btn btn-primary" onclick="openCreateModal('pharmacy')">
+                                    <i class="fa-solid fa-plus"></i> Ku dar Daawo Cusub
+                                </button>
+                                <button class="btn btn-outline" onclick="exportTableToCSV('pharmacy')">
+                                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="searchPharmacy" placeholder="Raadi Magaca Daawada ama Qeybta..." oninput="filterTable('pharmacy')">
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fa-solid fa-filter"></i> Kaydka (Stock Status):</label>
+                                <select id="filterStockPharmacy" onchange="filterTable('pharmacy')">
+                                    <option value="all">Dhammaan</option>
+                                    <option value="Waa Buuxdaa (In Stock)">Waa Buuxdaa (In Stock)</option>
+                                    <option value="Wuu Yar yahay (Low Stock)">Wuu Yar yahay (Low Stock)</option>
+                                    <option value="Wuu Dhamaaday (Out of Stock)">Wuu Dhamaaday (Out of Stock)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="responsive-table-container">
+                            <table class="data-table" id="pharmacyTable">
+                                <thead>
+                                    <tr>
+                                        <th>Koodhka Daawada</th>
+                                        <th>Magaca Daawada (Item)</th>
+                                        <th>Qeybta (Category)</th>
+                                        <th>Shirkadda Sameysay</th>
+                                        <th>Tirada Hadhay (Stock)</th>
+                                        <th>Qiimaha Xabbaddii</th>
+                                        <th>Dhicitaanka (Expiry)</th>
+                                        <th>Xaaladda Kaydka</th>
+                                        <th class="actions-col">Ficilada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. LABORATORY VIEW (TABLE 6) -->
+                <section class="view-panel" id="view-laboratory">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <div class="header-left">
+                                <div class="table-title">
+                                    <h2><i class="fa-solid fa-flask-vial text-purple"></i> Shaybaarka & Baaritaannada (Laboratory)</h2>
+                                    <p>Diwaangelinta tijaabooyinka dhiigga, raajada, MRI-ga, iyo natiijooyinka shaybaarka.</p>
+                                </div>
+                            </div>
+                            <div class="header-right">
+                                <button class="btn btn-primary" onclick="openCreateModal('laboratory')">
+                                    <i class="fa-solid fa-plus"></i> Dalbo Baaritaan Cusub
+                                </button>
+                                <button class="btn btn-outline" onclick="exportTableToCSV('laboratory')">
+                                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="searchLaboratory" placeholder="Raadi Bukaan, Baaritaan, ama Koodh..." oninput="filterTable('laboratory')">
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fa-solid fa-filter"></i> Natiijada:</label>
+                                <select id="filterResultLab" onchange="filterTable('laboratory')">
+                                    <option value="all">Dhammaan</option>
+                                    <option value="La Sugayo (Pending)">La Sugayo (Pending)</option>
+                                    <option value="Caadi (Normal)">Caadi (Normal)</option>
+                                    <option value="Khatar / Sare (Abnormal)">Khatar / Sare (Abnormal)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="responsive-table-container">
+                            <table class="data-table" id="laboratoryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Lab Code</th>
+                                        <th>Magaca Bukaanka</th>
+                                        <th>Nooca Baaritaanka (Test)</th>
+                                        <th>Dhakhtarka Dalbaday</th>
+                                        <th>Farsamo-yaqaanka (Lab Tech)</th>
+                                        <th>Taariikhda Baaritaanka</th>
+                                        <th>Qiimaha Baaritaanka</th>
+                                        <th>Natiijada (Result)</th>
+                                        <th class="actions-col">Ficilada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. BILLING & FINANCE VIEW (TABLE 7) -->
+                <section class="view-panel" id="view-billing">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <div class="header-left">
+                                <div class="table-title">
+                                    <h2><i class="fa-solid fa-file-invoice-dollar text-emerald"></i> Biilasha & Maaliyadda (Invoicing & Billing)</h2>
+                                    <p>Maamulka lacag-bixinta bukaanka, qaansheeyooyinka, iyo haraaga deynta.</p>
+                                </div>
+                            </div>
+                            <div class="header-right">
+                                <button class="btn btn-primary" onclick="openCreateModal('billing')">
+                                    <i class="fa-solid fa-plus"></i> Jar Biil Cusub
+                                </button>
+                                <button class="btn btn-outline" onclick="exportTableToCSV('billing')">
+                                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="searchBilling" placeholder="Raadi Biil No, Bukaan, ama Adeeg..." oninput="filterTable('billing')">
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fa-solid fa-filter"></i> Xaaladda Biilka:</label>
+                                <select id="filterStatusBilling" onchange="filterTable('billing')">
+                                    <option value="all">Dhammaan</option>
+                                    <option value="Waa La Bixiyay (Paid)">Waa La Bixiyay (Paid)</option>
+                                    <option value="Qayb baa dhiman (Partial)">Qayb baa dhiman (Partial)</option>
+                                    <option value="Lama Bixin (Unpaid)">Lama Bixin (Unpaid)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="responsive-table-container">
+                            <table class="data-table" id="billingTable">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Magaca Bukaanka</th>
+                                        <th>Adeegyada La Siiyay</th>
+                                        <th>Wadarta ($)</th>
+                                        <th>La Bixiyay ($)</th>
+                                        <th>Haraaga ($)</th>
+                                        <th>Habka Lacagta</th>
+                                        <th>Taariikhda</th>
+                                        <th>Xaaladda</th>
+                                        <th class="actions-col">Ficilada</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- DYNAMIC MODAL (For Add & Edit across all 7 tables) -->
+    <div class="modal-overlay" id="genericModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <i id="modalIcon" class="fa-solid fa-pen-to-square"></i>
+                    <h3 id="modalTitle">Ku dar Xog Cusub</h3>
+                </div>
+                <button class="modal-close" onclick="closeGenericModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="genericForm" onsubmit="handleFormSubmit(event)">
+                <div class="modal-body" id="modalDynamicFields">
+                    <!-- Form fields generated dynamically via JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeGenericModal()">Ka Noqo</button>
+                    <button type="submit" class="btn btn-primary" id="modalSubmitBtn">Keydi Xogta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
